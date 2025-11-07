@@ -1,4 +1,5 @@
 import { LoginForm } from "@/components/login-form"
+import { Suspense } from "react"
 
 export default function LoginPage() {
   return (
@@ -51,7 +52,9 @@ export default function LoginPage() {
             </div>
             <h2 className="text-2xl font-bold text-foreground">SimplifyClient</h2>
           </div>
+          <Suspense fallback={<div>Loading...</div>}>
           <LoginForm />
+          </Suspense>
         </div>
       </div>
     </div>
