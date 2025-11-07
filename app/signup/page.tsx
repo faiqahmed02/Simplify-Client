@@ -49,7 +49,7 @@ export default function SignupPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-foreground">ClientDock</h2>
+            <h2 className="text-2xl font-bold text-foreground">SimplifyClient</h2>
           </div>
           <SignupForm />
         </div>

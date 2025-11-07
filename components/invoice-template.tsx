@@ -88,7 +88,7 @@ export function InvoiceTemplate({ invoiceId }: InvoiceTemplateProps) {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-foreground">ClientDock</h2>
+            <h2 className="text-2xl font-bold text-foreground">SimplifyClient</h2>
           </div>
           <p className="text-sm text-muted-foreground">{invoiceData.freelancer.company}</p>
         </div>

@@ -7,7 +7,7 @@ export async function sendVerificationEmail(email: string, token: string) {
 
   try {
     await resend.emails.send({
-      from: process.env.EMAIL_FROM || "ClientDock <onboarding@resend.dev>",
+      from: process.env.EMAIL_FROM || "SimplifyClient <onboarding@resend.dev>",
       to: email,
       subject: "Verify your email address",
       html: `
@@ -31,14 +31,14 @@ export async function sendVerificationEmail(email: string, token: string) {
           </head>
           <body>
             <div class="container">
-              <h1>Welcome to ClientDock!</h1>
+              <h1>Welcome to SimplifyClient!</h1>
               <p>Thank you for signing up. Please verify your email address by clicking the button below:</p>
               <a href="${verificationUrl}" class="button">Verify Email Address</a>
               <p>Or copy and paste this link in your browser:</p>
               <p>${verificationUrl}</p>
               <p>This link will expire in 24 hours.</p>
               <div class="footer">
-                <p>If you didn't create an account with ClientDock, you can safely ignore this email.</p>
+                <p>If you didn't create an account with SimplifyClient, you can safely ignore this email.</p>
               </div>
             </div>
           </body>
@@ -56,7 +56,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
 
   try {
     await resend.emails.send({
-      from: process.env.EMAIL_FROM || "ClientDock <onboarding@resend.dev>",
+      from: process.env.EMAIL_FROM || "SimplifyClient <onboarding@resend.dev>",
       to: email,
       subject: "Reset your password",
       html: `

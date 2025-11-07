@@ -1,8 +1,8 @@
-# ClientDock Authentication Setup
+# SimplifyClient Authentication Setup
 
 ## Current Implementation: Preview Mode
 
-This preview version of ClientDock uses a simplified, client-side authentication system to avoid server-side dependencies (crypto, bcrypt, Prisma) that don't work in browser-based preview environments.
+This preview version of SimplifyClient uses a simplified, client-side authentication system to avoid server-side dependencies (crypto, bcrypt, Prisma) that don't work in browser-based preview environments.
 
 ### How It Works
 

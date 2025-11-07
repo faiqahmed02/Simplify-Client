@@ -12,7 +12,7 @@ export default function HomePage() {
             />
           </svg>
         </div>
-        <h1 className="text-5xl font-bold text-gray-900">ClientDock</h1>
+        <h1 className="text-5xl font-bold text-gray-900">SimplifyClient</h1>
         <p className="text-xl text-gray-600 max-w-md mx-auto text-balance">
           Professional client portal platform for freelancers
         </p>

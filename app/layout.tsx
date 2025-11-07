@@ -9,7 +9,7 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "ClientDock - Client Portal for Freelancers",
+  title: "SimplifyClient - Client Portal for Freelancers",
   description: "Professional client portal platform for freelancers",
   generator: "v0.app",
   icons: {

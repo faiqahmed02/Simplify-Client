@@ -30,7 +30,7 @@ export function DashboardSidebar() {
               />
             </svg>
           </div>
-          <span className="text-lg font-bold text-sidebar-foreground">ClientDock</span>
+          <span className="text-lg font-bold text-sidebar-foreground">SimplifyClient</span>
         </div>
       </div>
 

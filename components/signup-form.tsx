@@ -90,7 +90,7 @@ export function SignupForm() {
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-foreground mb-2">Create an account</h1>
-        <p className="text-muted-foreground">Get started with ClientDock for free</p>
+        <p className="text-muted-foreground">Get started with SimplifyClient for free</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

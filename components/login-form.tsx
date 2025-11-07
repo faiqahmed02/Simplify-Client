@@ -67,7 +67,7 @@ export function LoginForm() {
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-foreground mb-2">Welcome back</h1>
-        <p className="text-muted-foreground">Sign in to your ClientDock account</p>
+        <p className="text-muted-foreground">Sign in to your SimplifyClient account</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

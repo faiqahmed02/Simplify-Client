@@ -1,4 +1,4 @@
-# ClientDock - Client Portal for Freelancers
+# SimplifyClient - Client Portal for Freelancers
 
 A modern, clean SaaS web application for freelancers to manage client relationships, projects, invoices, and communications.
 
