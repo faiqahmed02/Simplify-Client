@@ -1,0 +1,208 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("NEON_DATABASE_URL")
+}
+
+model User {
+  id             String      @id @default(cuid())
+  name           String
+  email          String      @unique
+  password       String
+  emailVerified  DateTime?
+  role           Role        @default(FREELANCER)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // Relations
+  clients        Client[]
+  projects       Project[]
+  invoices       Invoice[]
+  messages       Message[]
+  sessions       Session[]
+  accounts       Account[]
+  subscriptions  Subscription[]
+
+  // Soft delete support
+  isActive       Boolean     @default(true)
+
+  File File[]
+}
+
+model Client {
+  id          String      @id @default(cuid())
+  name        String
+  email       String
+  company     String?
+  phone       String?
+  notes       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  projects    Project[]
+  invoices    Invoice[]
+  messages    Message[]
+  files       File[]
+}
+
+model Project {
+  id            String      @id @default(cuid())
+  title         String
+  description   String?
+  status        ProjectStatus @default(IN_PROGRESS)
+  progress      Int          @default(0) // 0–100%
+  startDate     DateTime? 
+  endDate       DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  clientId      String
+  client        Client      @relation(fields: [clientId], references: [id])
+  files         File[]
+  messages      Message[]
+  invoices      Invoice[]
+}
+
+model File {
+  id          String      @id @default(cuid())
+  name        String
+  url         String
+  size        Int?
+  type        String?
+  version     Int          @default(1)
+  uploadedAt  DateTime     @default(now())
+
+  // Relations
+  uploaderId  String
+  uploader    User         @relation(fields: [uploaderId], references: [id])
+  projectId   String?
+  project     Project?     @relation(fields: [projectId], references: [id])
+  clientId    String?
+  client      Client?      @relation(fields: [clientId], references: [id])
+}
+
+model Message {
+  id          String      @id @default(cuid())
+  content     String
+  createdAt   DateTime    @default(now())
+
+  // Relations
+  senderId    String
+  sender      User        @relation(fields: [senderId], references: [id])
+  clientId    String?
+  client      Client?     @relation(fields: [clientId], references: [id])
+  projectId   String?
+  project     Project?    @relation(fields: [projectId], references: [id])
+}
+
+model Invoice {
+  id          String      @id @default(cuid())
+  invoiceNo   String      @unique
+  amount      Float
+  currency    String      @default("EUR")
+  status      InvoiceStatus @default(PENDING)
+  dueDate     DateTime?
+  issuedAt    DateTime    @default(now())
+  paidAt      DateTime?
+  stripeId    String?
+  pdfUrl      String?
+
+  // Relations
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  clientId    String
+  client      Client      @relation(fields: [clientId], references: [id])
+  projectId   String?
+  project     Project?    @relation(fields: [projectId], references: [id])
+}
+
+model Subscription {
+  id              String      @id @default(cuid())
+  plan            SubscriptionPlan @default(FREE)
+  stripeCustomerId String?
+  stripeSubId     String?
+  status          SubscriptionStatus @default(ACTIVE)
+  currentPeriodEnd DateTime?
+  createdAt       DateTime    @default(now())
+
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.Text
+  session_state     String?
+
+  user              User     @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum Role {
+  FREELANCER
+  CLIENT
+  ADMIN
+}
+
+enum ProjectStatus {
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum SubscriptionPlan {
+  FREE
+  PRO
+  AGENCY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}

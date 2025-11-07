@@ -1,22 +1,65 @@
 "use client"
-
-import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import { setSession } from "@/lib/auth-client"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { Loader2 } from "lucide-react"
+
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+})
+
+type LoginInput = z.infer<typeof loginSchema>
 
 export function LoginForm() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+  })
+
+  const onSubmit = async (data: LoginInput) => {
     setIsLoading(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    setError(null)
+
+    try {
+      // Demo login - accepts any email/password for preview
+      const demoUser = {
+        id: "demo-user-1",
+        name: data.email.split("@")[0],
+        email: data.email,
+        role: "freelancer",
+      }
+
+      setSession(demoUser)
+      router.push(callbackUrl)
+      router.refresh()
+    } catch (err) {
+      setError("An error occurred during login")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true)
+    setError("Google sign-in is not available in preview mode")
     setIsLoading(false)
   }
 
@@ -27,10 +70,18 @@ export function LoginForm() {
         <p className="text-muted-foreground">Sign in to your ClientDock account</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="name@example.com" required className="h-11" />
+          <Input
+            id="email"
+            type="email"
+            placeholder="name@example.com"
+            {...register("email")}
+            disabled={isLoading}
+            className="h-11"
+          />
+          {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
         </div>
 
         <div className="space-y-2">
@@ -40,11 +91,21 @@ export function LoginForm() {
               Forgot password?
             </Link>
           </div>
-          <Input id="password" type="password" required className="h-11" />
+          <Input id="password" type="password" {...register("password")} disabled={isLoading} className="h-11" />
+          {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
         </div>
 
+        {error && <div className="p-3 rounded-lg text-sm bg-red-50 text-red-800 border border-red-200">{error}</div>}
+
         <Button type="submit" className="w-full h-11" disabled={isLoading}>
-          {isLoading ? "Signing in..." : "Sign in"}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            "Sign in"
+          )}
         </Button>
       </form>
 
@@ -55,7 +116,13 @@ export function LoginForm() {
         </span>
       </div>
 
-      <Button variant="outline" className="w-full h-11 bg-transparent" type="button">
+      <Button
+        variant="outline"
+        className="w-full h-11 bg-transparent"
+        type="button"
+        onClick={handleGoogleSignIn}
+        disabled={isLoading}
+      >
         <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
           <path
             fill="currentColor"

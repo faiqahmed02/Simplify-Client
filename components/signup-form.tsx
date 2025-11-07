@@ -1,23 +1,88 @@
 "use client"
-
-import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
+import { setSession } from "@/lib/auth-client"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { Loader2 } from "lucide-react"
+
+const signupSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Must contain uppercase")
+    .regex(/[a-z]/, "Must contain lowercase")
+    .regex(/[0-9]/, "Must contain number")
+    .regex(/[^A-Za-z0-9]/, "Must contain special character"),
+  terms: z.boolean().refine((val) => val === true, {
+    message: "You must agree to the terms",
+  }),
+})
+
+type SignupInput = z.infer<typeof signupSchema>
 
 export function SignupForm() {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<SignupInput>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: { terms: false },
+  })
+
+  const termsAccepted = watch("terms")
+
+  const onSubmit = async (data: SignupInput) => {
     setIsLoading(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    setMessage(null)
+
+    try {
+      // Demo signup - creates user and logs in automatically
+      const demoUser = {
+        id: `user-${Date.now()}`,
+        name: data.name,
+        email: data.email,
+        role: "freelancer",
+      }
+
+      setSession(demoUser)
+      setMessage({
+        type: "success",
+        text: "Account created successfully! Redirecting...",
+      })
+      setTimeout(() => router.push("/dashboard"), 1500)
+    } catch (err) {
+      setMessage({
+        type: "error",
+        text: "An error occurred during registration",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true)
+    setMessage({
+      type: "error",
+      text: "Google sign-in is not available in preview mode",
+    })
     setIsLoading(false)
   }
 
@@ -28,24 +93,53 @@ export function SignupForm() {
         <p className="text-muted-foreground">Get started with ClientDock for free</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">Full name</Label>
-          <Input id="name" type="text" placeholder="John Doe" required className="h-11" />
+          <Input
+            id="name"
+            type="text"
+            placeholder="John Doe"
+            {...register("name")}
+            disabled={isLoading}
+            className="h-11"
+          />
+          {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="name@example.com" required className="h-11" />
+          <Input
+            id="email"
+            type="email"
+            placeholder="name@example.com"
+            {...register("email")}
+            disabled={isLoading}
+            className="h-11"
+          />
+          {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" placeholder="Create a strong password" required className="h-11" />
+          <Input
+            id="password"
+            type="password"
+            placeholder="Create a strong password"
+            {...register("password")}
+            disabled={isLoading}
+            className="h-11"
+          />
+          {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox id="terms" required />
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="terms"
+            checked={termsAccepted}
+            onCheckedChange={(checked) => setValue("terms", checked as boolean)}
+            disabled={isLoading}
+          />
           <label
             htmlFor="terms"
             className="text-sm text-muted-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -60,9 +154,29 @@ export function SignupForm() {
             </Link>
           </label>
         </div>
+        {errors.terms && <p className="text-sm text-destructive">{errors.terms.message}</p>}
+
+        {message && (
+          <div
+            className={`p-3 rounded-lg text-sm ${
+              message.type === "success"
+                ? "bg-green-50 text-green-800 border border-green-200"
+                : "bg-red-50 text-red-800 border border-red-200"
+            }`}
+          >
+            {message.text}
+          </div>
+        )}
 
         <Button type="submit" className="w-full h-11" disabled={isLoading}>
-          {isLoading ? "Creating account..." : "Create account"}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating account...
+            </>
+          ) : (
+            "Create account"
+          )}
         </Button>
       </form>
 
@@ -73,7 +187,13 @@ export function SignupForm() {
         </span>
       </div>
 
-      <Button variant="outline" className="w-full h-11 bg-transparent" type="button">
+      <Button
+        variant="outline"
+        className="w-full h-11 bg-transparent"
+        type="button"
+        onClick={handleGoogleSignIn}
+        disabled={isLoading}
+      >
         <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
           <path
             fill="currentColor"
@@ -81,11 +201,11 @@ export function SignupForm() {
           />
           <path
             fill="currentColor"
-            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
           />
           <path
             fill="currentColor"
-            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
           />
           <path
             fill="currentColor"

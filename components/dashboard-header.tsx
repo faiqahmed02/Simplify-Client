@@ -13,8 +13,28 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { useAuth } from "@/components/auth-provider"
+import { useRouter } from "next/navigation"
 
 export function DashboardHeader() {
+  const { user, signOut } = useAuth()
+  const router = useRouter()
+
+  const handleLogout = () => {
+    signOut()
+  }
+
+  const handleNavigation = (path: string) => {
+    router.push(path)
+  }
+
+  const userInitials =
+    user?.name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase() || "U"
+
   return (
     <header className="border-b border-border bg-card">
       <div className="flex items-center justify-between h-16 px-6 lg:px-8">
@@ -62,20 +82,22 @@ export function DashboardHeader() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="gap-2 px-2">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                  <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
+                  <AvatarImage src="/placeholder.svg?height=32&width=32" alt={user?.name || "User"} />
+                  <AvatarFallback className="bg-primary text-primary-foreground">{userInitials}</AvatarFallback>
                 </Avatar>
-                <span className="hidden md:inline text-sm font-medium">John Doe</span>
+                <span className="hidden md:inline text-sm font-medium">{user?.name || "User"}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleNavigation("/settings")}>Profile</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleNavigation("/settings")}>Settings</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleNavigation("/settings")}>Billing</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">Log out</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                Log out
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
