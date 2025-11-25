@@ -42,6 +42,7 @@ import {
 } from "lucide-react";
 import {motion} from "framer-motion";
 import TopNavbar from "@/components/top-navbar";
+import {DashboardHeader} from "@/components/dashboard-header";
 
 // Single-file React component preview for SimplifyClient dashboard
 // Built for Next.js + TailwindCSS. Drop this in a page or a Storybook story.
@@ -124,137 +125,139 @@ export default function ClientDockDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 text-slate-800 dark:text-slate-100">
       <div className="mx-auto">
-        <div className="flex gap-6">
+        <div className="flex">
           {/* Sidebar */}
           <DashboardSidebar />
           {/* Main area */}
-          <main className="flex-1 min-h-screen ml-0 py-8 pr-4 sm:pr-6 lg:pr-8">
-            {/* Top navbar */}
-         <TopNavbar />
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <DashboardHeader />
+            <main className="flex-1 overflow-y-auto p-6 lg:p-8">
+              {/* Top navbar */}
 
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-semibold">
-                  Welcome back, {userName} 👋
-                </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Here's a quick overview of your business.
-                </p>
-              </div>
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-semibold">
+                    Welcome back, {userName} 👋
+                  </h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Here's a quick overview of your business.
+                  </p>
+                </div>
 
-              <div className="flex items-center gap-3">
-                <button className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-500 text-white shadow-md hover:scale-[1.01] transition-transform">
-                  <Plus size={16} /> New
-                </button>
-                <div className="text-sm text-slate-500 dark:text-slate-400">
-                  Last synced: Today
+                <div className="flex items-center gap-3">
+                  <button className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-500 text-white shadow-md hover:scale-[1.01] transition-transform">
+                    <Plus size={16} /> New
+                  </button>
+                  <div className="text-sm text-slate-500 dark:text-slate-400">
+                    Last synced: Today
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* KPI cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {stats.map((s) => (
-                <motion.div
-                  key={s.title}
-                  className="p-4 rounded-2xl bg-white dark:bg-slate-900 shadow hover:shadow-lg transition-shadow"
-                  whileHover={{y: -4}}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <div className="text-sm text-slate-500 dark:text-slate-400">
-                        {s.title}
+              {/* KPI cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {stats.map((s) => (
+                  <motion.div
+                    key={s.title}
+                    className="p-4 rounded-2xl bg-white dark:bg-slate-900 shadow hover:shadow-lg transition-shadow"
+                    whileHover={{y: -4}}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400">
+                          {s.title}
+                        </div>
+                        <div className="text-xl font-semibold">{s.value}</div>
                       </div>
-                      <div className="text-xl font-semibold">{s.value}</div>
+                      <div className="text-sm text-green-500 dark:text-green-400">
+                        {s.change}
+                      </div>
                     </div>
-                    <div className="text-sm text-green-500 dark:text-green-400">
-                      {s.change}
+
+                    {/* Tiny sparkline */}
+                    <Sparkline data={s.spark} />
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <section className="lg:col-span-2 space-y-4">
+                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-medium">Projects Overview</h3>
+                      <a
+                        className="text-sm text-indigo-600 hover:underline"
+                        href="#"
+                      >
+                        View all
+                      </a>
+                    </div>
+
+                    <ProjectsTable projects={projects} />
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-medium">Quick Actions</h3>
+                      <div className="text-sm text-slate-500 dark:text-slate-400">
+                        Shortcuts
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button className="flex-1 py-2 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                        Add New Client
+                      </button>
+                      <button className="flex-1 py-2 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                        Create Project
+                      </button>
+                      <button className="flex-1 py-2 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                        Send Invoice
+                      </button>
                     </div>
                   </div>
+                </section>
 
-                  {/* Tiny sparkline */}
-                  <Sparkline data={s.spark} />
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <section className="lg:col-span-2 space-y-4">
-                <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-medium">Projects Overview</h3>
-                    <a
-                      className="text-sm text-indigo-600 hover:underline"
-                      href="#"
-                    >
-                      View all
-                    </a>
-                  </div>
-
-                  <ProjectsTable projects={projects} />
-                </div>
-
-                <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-medium">Quick Actions</h3>
-                    <div className="text-sm text-slate-500 dark:text-slate-400">
-                      Shortcuts
+                <aside className="space-y-4">
+                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium">Recent Messages</h4>
+                      <a
+                        className="text-sm text-indigo-600 hover:underline"
+                        href="#"
+                      >
+                        View all
+                      </a>
                     </div>
+
+                    <MessagesWidget messages={messages} />
                   </div>
 
-                  <div className="flex gap-3">
-                    <button className="flex-1 py-2 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
-                      Add New Client
-                    </button>
-                    <button className="flex-1 py-2 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
-                      Create Project
-                    </button>
-                    <button className="flex-1 py-2 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
-                      Send Invoice
-                    </button>
+                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium">Invoices</h4>
+                      <a
+                        className="text-sm text-indigo-600 hover:underline"
+                        href="#"
+                      >
+                        Manage
+                      </a>
+                    </div>
+
+                    <InvoicesWidget invoices={invoices} />
                   </div>
-                </div>
-              </section>
+                </aside>
+              </div>
 
-              <aside className="space-y-4">
-                <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 shadow">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium">Recent Messages</h4>
-                    <a
-                      className="text-sm text-indigo-600 hover:underline"
-                      href="#"
-                    >
-                      View all
-                    </a>
-                  </div>
-
-                  <MessagesWidget messages={messages} />
-                </div>
-
-                <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 shadow">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium">Invoices</h4>
-                    <a
-                      className="text-sm text-indigo-600 hover:underline"
-                      href="#"
-                    >
-                      Manage
-                    </a>
-                  </div>
-
-                  <InvoicesWidget invoices={invoices} />
-                </div>
-              </aside>
-            </div>
-
-            <footer className="mt-8 text-xs text-slate-500 dark:text-slate-400">
-              © {new Date().getFullYear()} SimplifyClient •{" "}
-              <a className="underline" href="#">
-                Privacy Policy
-              </a>
-            </footer>
-          </main>
+              <footer className="mt-8 text-xs text-slate-500 dark:text-slate-400">
+                © {new Date().getFullYear()} SimplifyClient •{" "}
+                <a className="underline" href="#">
+                  Privacy Policy
+                </a>
+              </footer>
+            </main>
+          </div>
         </div>
       </div>
     </div>
