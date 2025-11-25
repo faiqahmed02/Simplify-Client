@@ -1,21 +1,22 @@
-"use client"
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Checkbox } from "@/components/ui/checkbox"
-import { setSession } from "@/lib/auth-client"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { Loader2 } from "lucide-react"
+"use client";
+import {useState} from "react";
+import Link from "next/link";
+import {useRouter} from "next/navigation";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {Separator} from "@/components/ui/separator";
+import {Checkbox} from "@/components/ui/checkbox";
+import {setSession} from "@/lib/auth-client";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {z} from "zod";
+import {Loader2} from "lucide-react";
 
 const signupSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
+  role: z.enum(["freelancer", "client"]).default("freelancer"),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
@@ -26,71 +27,94 @@ const signupSchema = z.object({
   terms: z.boolean().refine((val) => val === true, {
     message: "You must agree to the terms",
   }),
-})
+});
 
-type SignupInput = z.infer<typeof signupSchema>
+type SignupInput = z.infer<typeof signupSchema>;
 
 export function SignupForm() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: {errors},
     setValue,
     watch,
   } = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { terms: false },
-  })
+    defaultValues: {terms: false},
+  });
 
-  const termsAccepted = watch("terms")
+  const termsAccepted = watch("terms");
+console.log(process.env.SERVER_URL);
 
   const onSubmit = async (data: SignupInput) => {
-    setIsLoading(true)
-    setMessage(null)
+    setIsLoading(true);
+    setMessage(null);
 
     try {
-      // Demo signup - creates user and logs in automatically
-      const demoUser = {
-        id: `user-${Date.now()}`,
-        name: data.name,
-        email: data.email,
-        role: "freelancer",
+      // User signup - creates user and logs in automatically
+      let user;
+      const res = await fetch(`http://localhost:4000/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          role: data.role,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Signup failed");
       }
 
-      setSession(demoUser)
+      user = await res.json();
+
+
+      setSession(user);
       setMessage({
         type: "success",
         text: "Account created successfully! Redirecting...",
-      })
-      setTimeout(() => router.push("/dashboard"), 1500)
+      });
+      setTimeout(() => router.push("/dashboard"), 1500);
     } catch (err) {
       setMessage({
         type: "error",
         text: "An error occurred during registration",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     setMessage({
       type: "error",
       text: "Google sign-in is not available in preview mode",
-    })
-    setIsLoading(false)
-  }
+    });
+    setIsLoading(false);
+  };
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Create an account</h1>
-        <p className="text-muted-foreground">Get started with SimplifyClient for free</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          Create an account
+        </h1>
+        <p className="text-muted-foreground">
+          Get started with SimplifyClient for free
+        </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -104,7 +128,9 @@ export function SignupForm() {
             disabled={isLoading}
             className="h-11"
           />
-          {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+          {errors.name && (
+            <p className="text-sm text-destructive">{errors.name.message}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -117,7 +143,9 @@ export function SignupForm() {
             disabled={isLoading}
             className="h-11"
           />
-          {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+          {errors.email && (
+            <p className="text-sm text-destructive">{errors.email.message}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -130,7 +158,11 @@ export function SignupForm() {
             disabled={isLoading}
             className="h-11"
           />
-          {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+          {errors.password && (
+            <p className="text-sm text-destructive">
+              {errors.password.message}
+            </p>
+          )}
         </div>
 
         <div className="flex items-start space-x-2">
@@ -154,7 +186,9 @@ export function SignupForm() {
             </Link>
           </label>
         </div>
-        {errors.terms && <p className="text-sm text-destructive">{errors.terms.message}</p>}
+        {errors.terms && (
+          <p className="text-sm text-destructive">{errors.terms.message}</p>
+        )}
 
         {message && (
           <div
@@ -217,10 +251,13 @@ export function SignupForm() {
 
       <p className="text-center text-sm text-muted-foreground mt-6">
         Already have an account?{" "}
-        <Link href="/login" className="text-primary hover:underline font-medium">
+        <Link
+          href="/login"
+          className="text-primary hover:underline font-medium"
+        >
           Sign in
         </Link>
       </p>
     </div>
-  )
+  );
 }

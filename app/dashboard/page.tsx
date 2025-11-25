@@ -41,6 +41,7 @@ import {
   Moon,
 } from "lucide-react";
 import {motion} from "framer-motion";
+import TopNavbar from "@/components/top-navbar";
 
 // Single-file React component preview for SimplifyClient dashboard
 // Built for Next.js + TailwindCSS. Drop this in a page or a Storybook story.
@@ -122,139 +123,14 @@ export default function ClientDockDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 text-slate-800 dark:text-slate-100">
-      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto">
         <div className="flex gap-6">
           {/* Sidebar */}
-          {/* <aside
-            className={`fixed z-20 inset-y-0 left-0 w-64 transform bg-white dark:bg-slate-900 shadow-lg rounded-tr-2xl rounded-br-2xl p-4 transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-              sidebarOpen
-                ? "translate-x-0"
-                : "-translate-x-full lg:translate-x-0"
-            }`}
-            aria-label="Sidebar"
-          >
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center text-white font-semibold">
-                  CD
-                </div>
-                <div>
-                  <h1 className="text-lg font-semibold">SimplifyClient</h1>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Client portal
-                  </p>
-                </div>
-              </div>
-              <button
-                className="lg:hidden p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            <nav className="space-y-1">
-              {[
-                {name: "Dashboard", icon: <Home size={18} />},
-                {name: "Clients", icon: <Users size={18} />},
-                {name: "Projects", icon: <Folder size={18} />},
-                {name: "Invoices", icon: <FileText size={18} />},
-                {name: "Files", icon: <Folder size={18} />},
-                {name: "Messages", icon: <MessageCircle size={18} />},
-                {name: "Settings", icon: <Settings size={18} />},
-              ].map((item) => (
-                <a
-                  key={item.name}
-                  className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                  href="#"
-                >
-                  <span className="text-slate-500 dark:text-slate-300">
-                    {item.icon}
-                  </span>
-                  <span className="font-medium">{item.name}</span>
-                </a>
-              ))}
-            </nav>
-
-            <div className="mt-8 text-xs text-slate-500 dark:text-slate-400">
-              © {new Date().getFullYear()} SimplifyClient
-            </div>
-          </aside> */}
           <DashboardSidebar />
           {/* Main area */}
-          <main className="flex-1 min-h-screen ml-0 py-8">
+          <main className="flex-1 min-h-screen ml-0 py-8 pr-4 sm:pr-6 lg:pr-8">
             {/* Top navbar */}
-            <div className="flex items-center justify-between gap-4 mb-6">
-              <div className="flex items-center gap-3">
-                <button
-                  className="lg:hidden p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
-                  onClick={() => setSidebarOpen(true)}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
-                </button>
-
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                    <Search size={16} className="text-slate-400" />
-                  </div>
-                  <input
-                    className="pl-10 pr-4 py-2 rounded-2xl border border-transparent bg-slate-100 dark:bg-slate-800 focus:ring-2 focus:ring-indigo-400 focus:outline-none w-72"
-                    placeholder="Search clients or projects..."
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <button className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 relative">
-                  <Bell size={18} />
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full px-1">
-                    3
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => setDark(!dark)}
-                  className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  {dark ? <Sun size={18} /> : <Moon size={18} />}
-                </button>
-
-                <div className="relative">
-                  <button className="flex items-center gap-2 rounded-full bg-white dark:bg-slate-900 p-1 px-2 shadow-sm">
-                    <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
-                      FA
-                    </div>
-                    <div className="text-sm">{userName}</div>
-                  </button>
-                </div>
-              </div>
-            </div>
+         <TopNavbar />
 
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
