@@ -34,33 +34,6 @@ This preview version uses a simplified client-side authentication system to demo
 - **Icons**: Lucide React
 - **Analytics**: Vercel Analytics
 
-## Project Structure
-
-\`\`\`
-app/
-├── (auth)
-│   ├── login/              # Login page
-│   └── signup/             # Signup page
-├── dashboard/              # Main dashboard
-├── client/[id]/            # Individual client portal
-├── invoices/               # Invoice list
-├── invoice/[id]/           # Invoice detail
-├── settings/               # User settings
-└── page.tsx                # Landing page
-
-components/
-├── ui/                     # shadcn/ui components
-├── auth-provider.tsx       # Auth context & session management
-├── dashboard-*.tsx         # Dashboard components
-├── client-*.tsx            # Client portal components
-├── invoice-*.tsx           # Invoice components
-└── settings-*.tsx          # Settings components
-
-lib/
-├── auth-client.ts          # Client-side auth utilities
-└── utils.ts                # Helper functions
-\`\`\`
-
 ## Design System
 
 - **Primary Color**: `#2563eb` (Blue 600)
